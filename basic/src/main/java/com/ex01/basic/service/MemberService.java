@@ -42,8 +42,8 @@ public class MemberService {
     }
 
     public void delMember(int id){
-        if(!memberRepository.exist(id)) throw new MemberNotFoundException();
-        memberRepository.deleteById(id);
+//        if(!memberRepository.exist(id)) throw new MemberNotFoundException();
+        if(!memberRepository.deleteById(id)) throw new MemberNotFoundException();
     }
 
     public void insert(MemberDto memberDto){
