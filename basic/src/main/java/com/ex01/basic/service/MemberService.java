@@ -1,8 +1,10 @@
 package com.ex01.basic.service;
 
+import com.ex01.basic.dto.LoginDto;
 import com.ex01.basic.dto.MemberDto;
 import com.ex01.basic.exception.MemberDuplicationException;
 import com.ex01.basic.exception.MemberNotFoundException;
+import com.ex01.basic.exception.InvalidLoginException;
 import com.ex01.basic.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,5 +51,9 @@ public class MemberService {
     public void insert(MemberDto memberDto){
         if(memberRepository.exist(memberDto.getId())) throw new MemberDuplicationException();
         memberRepository.save(memberDto);
+    }
+
+    public void login(LoginDto loginDto){
+        if(!memberRepository.login(loginDto)) throw new InvalidLoginException();
     }
 }

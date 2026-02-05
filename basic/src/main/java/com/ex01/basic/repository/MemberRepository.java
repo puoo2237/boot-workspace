@@ -1,5 +1,6 @@
 package com.ex01.basic.repository;
 
+import com.ex01.basic.dto.LoginDto;
 import com.ex01.basic.dto.MemberDto;
 import org.springframework.stereotype.Repository;
 
@@ -14,9 +15,9 @@ public class MemberRepository {
     public MemberRepository() {
         System.out.println("MemberRepository 생성자");
         DB = new ArrayList<>();
-        DB.add(new MemberDto(1, "aaa", "aaa", "USER"));
-        DB.add(new MemberDto(2, "bbb", "bbb", "USER"));
-        DB.add(new MemberDto(3, "ccc", "ccc", "USER"));
+        DB.add(new MemberDto(1, "aaa", "aaaS", "USER"));
+        DB.add(new MemberDto(2, "bbb", "bbbS", "USER"));
+        DB.add(new MemberDto(3, "ccc", "cccS", "USER"));
     }
 
     public List<MemberDto> findAll() {
@@ -56,6 +57,13 @@ public class MemberRepository {
 
     public boolean deleteById(int id) {
         return DB.removeIf(mem -> mem.getId() == id);
+    }
+
+    public boolean login(LoginDto loginDto) {
+
+        return DB.stream()
+                .anyMatch(mem -> (mem.getUsername().equals(loginDto.getUsername()))
+                        && (mem.getPassword().equals(loginDto.getPassword())));
     }
 
     public void repositoryTest() {
