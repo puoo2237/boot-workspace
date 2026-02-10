@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 public class MemberDto {
     private int id;
     private String username, password, role;
+    private String fileName;
 
     public MemberDto(MemberEntity memberEntity) {
         BeanUtils.copyProperties(memberEntity, this);

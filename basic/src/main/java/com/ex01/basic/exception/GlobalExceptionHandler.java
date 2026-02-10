@@ -37,4 +37,14 @@ public class GlobalExceptionHandler {
         problemDetail.setDetail(invalidLoginException.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problemDetail);
     }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<ProblemDetail> notFoundHandler(
+            FileNotFoundException fileNotFoundException
+    ){
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setTitle("파일이 존재하지 않음");
+        problemDetail.setDetail(fileNotFoundException.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+    }
 }

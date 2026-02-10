@@ -4,6 +4,7 @@ import com.ex01.basic.dto.LoginDto;
 import com.ex01.basic.dto.MemberDto;
 import com.ex01.basic.dto.MemberRegDto;
 import com.ex01.basic.entity.MemberEntity;
+import com.ex01.basic.service.MemberFileService;
 import com.ex01.basic.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -13,10 +14,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "MemberAPI", description = "회원 도메인 API")
 // controller -> service -> repository -> dto
@@ -24,9 +30,39 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/members")
 public class MemberController {
     private MemberService memberService;
+    @Autowired
+    private MemberFileService memberFileService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
+    }
+
+    @Operation(
+            summary = "회원 이미지 조회",
+            description = "프로필의 이미지 다운로드"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "이미지 조회 성공",
+                    content = @Content(
+                            mediaType = "image/*",
+                            schema = @Schema(implementation = Byte.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "이미지 없음"
+            )
+    }
+    )
+    @GetMapping("{fileName}/image")
+    public ResponseEntity<byte[]> getMeberImage(@PathVariable String fileName) {
+        byte[] imageByte = null;
+        imageByte = memberFileService.getImage(fileName);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, "image/jpg")
+                .body(imageByte);
     }
 
     @GetMapping
@@ -53,7 +89,7 @@ public class MemberController {
     }
     )
     public ResponseEntity<Page<MemberEntity>> getList(
-            @RequestParam(name="start", defaultValue = "0") int start) {
+            @RequestParam(value = "start", defaultValue = "0") int start) {
         return ResponseEntity.ok(memberService.getList(start));
     }
 
@@ -68,7 +104,7 @@ public class MemberController {
                     description = "성공",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = MemberDto.class)
+                            schema = @Schema(implementation = Page.class)
                     )
             ),
             @ApiResponse(
@@ -84,7 +120,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getOne(id));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "회원 수정",
             description = "id를 이용한 회원 수정"
@@ -108,9 +144,11 @@ public class MemberController {
             )
     }
     )
-    public ResponseEntity<Void> modify(@PathVariable int id,
-                                       @RequestBody MemberRegDto memberRegDto) {
-        memberService.modify(id, memberRegDto);
+    public ResponseEntity<Void> update(
+            @PathVariable int id,
+            @RequestParam(value = "file", required = false) MultipartFile multipartFile,
+            @ParameterObject @ModelAttribute MemberRegDto memberRegDto) {
+        memberService.update(id, memberRegDto, multipartFile);
         return ResponseEntity.ok().build();
     }
 
@@ -138,12 +176,14 @@ public class MemberController {
             )
     }
     )
-    public ResponseEntity<Void> delMember(@PathVariable int id) {
+    public ResponseEntity<Void> delMember(@PathVariable int id,
+                                          @RequestBody String fileName) {
         memberService.delMember(id);
+        memberFileService.deleteFile(fileName);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "회원 추가",
             description = "회원 등록"
@@ -167,8 +207,12 @@ public class MemberController {
             )
     }
     )
-    public ResponseEntity<Void> insert(@RequestBody MemberRegDto memberRegDto) {
-        memberService.insert(memberRegDto);
+    public ResponseEntity<Void> insert(@RequestParam(value = "file", required = false) MultipartFile multipartFile,
+                                       @ParameterObject @ModelAttribute
+                                       MemberRegDto memberRegDto) {
+        System.out.println("memberRegDto: " + memberRegDto);
+        System.out.println("multipartFile: " + multipartFile);
+        memberService.insert(memberRegDto, multipartFile);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

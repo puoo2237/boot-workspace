@@ -16,12 +16,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MemberFileService memberFileService;
 
     @Transactional(readOnly = true)
     public Page<MemberEntity> getList(int start) {
@@ -45,8 +47,14 @@ public class MemberService {
                 .orElseThrow(MemberNotFoundException::new);
     }
 
-    public void modify(int id, MemberRegDto memberRegDto) {
+    public void update(int id, MemberRegDto memberRegDto, MultipartFile multipartFile) {
         if (!memberRepository.existsById(id)) throw new MemberNotFoundException();
+        String changeFileName = memberFileService.saveFile(multipartFile);
+        if (!changeFileName.equals("nan")) {
+            memberFileService.deleteFile(memberRegDto.getFileName());
+            memberRegDto.setFileName(changeFileName);
+        }
+
         MemberEntity memberEntity = new MemberEntity();
         MemberDto memberDto = new MemberDto();
         BeanUtils.copyProperties(memberRegDto, memberDto);
@@ -61,12 +69,22 @@ public class MemberService {
         memberRepository.deleteById(id);
     }
 
-    public void insert(MemberRegDto memberRegDto) {
+    public void insert(MemberRegDto memberRegDto, MultipartFile multipartFile) {
         if (memberRepository.findByUserName(memberRegDto.getUsername()).isPresent())
             throw new MemberDuplicationException();
+
+        String fileName = memberFileService.saveFile(multipartFile);
+        memberRegDto.setFileName(fileName);
         MemberEntity memberEntity = new MemberEntity();
         BeanUtils.copyProperties(memberRegDto, memberEntity);
         memberRepository.save(memberEntity);
+//        System.out.println("파일 이름: "+ multipartFile.getOriginalFilename());
+//        File file = new File("C:\\Users\\seung\\Downloads\\[IBM] Cloud Native Dev base AI agent 3기\\00. practice\\boot-workspace\\" + multipartFile.getOriginalFilename());
+//        try {
+//            multipartFile.transferTo(file);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     public void login(LoginDto loginDto) {
@@ -75,4 +93,5 @@ public class MemberService {
                 .isEmpty();
         if (chck) throw new InvalidLoginException();
     }
+
 }
