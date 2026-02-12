@@ -47,4 +47,14 @@ public class GlobalExceptionHandler {
         problemDetail.setDetail(fileNotFoundException.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
     }
+
+
+    @ExceptionHandler(MemberAccessDeniedException.class)
+    public ResponseEntity<ProblemDetail> handlerAccessDeniedException(
+            MemberAccessDeniedException memberAccessDeniedException) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+        problemDetail.setDetail(memberAccessDeniedException.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail);
+    }
 }

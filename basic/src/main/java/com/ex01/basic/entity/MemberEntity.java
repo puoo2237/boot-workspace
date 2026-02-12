@@ -22,5 +22,12 @@ public class MemberEntity {
     private String role;
     private String fileName;
 
+    @PrePersist
+    public void prePersist() {
+        if (this.role == null || this.role.equals("") ) {
+            this.role = "USER";
+        }
+    }
+
 
 }

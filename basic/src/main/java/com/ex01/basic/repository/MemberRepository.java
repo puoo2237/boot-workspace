@@ -15,4 +15,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Integer> {
             nativeQuery = true)
     Optional<MemberEntity> findByUserName(String username);
 
+    Optional<MemberEntity> findByUsername(String username);
+
 }

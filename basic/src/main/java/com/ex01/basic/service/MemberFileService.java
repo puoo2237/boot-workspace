@@ -47,11 +47,13 @@ public class MemberFileService {
     }
 
     public void deleteFile(String fileName) {
-        Path path = Paths.get(DIR + fileName);
-        try {
-            Files.deleteIfExists(path);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (fileName != null && !fileName.equals("nan")) {
+            Path path = Paths.get(DIR + fileName);
+            try {
+                Files.deleteIfExists(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
