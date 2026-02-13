@@ -42,9 +42,14 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberDto getOne(int id, String username) {
-        MemberEntity memberEntity = memberRepository.findById(id)
+        MemberEntity memberEntity = memberRepository
+                .findById(id)
                 .orElseThrow(MemberNotFoundException::new);
-        if(!memberEntity.getUsername().equals(username)){
+        String role = memberRepository
+                .findByUsername(username)
+                .orElseThrow(MemberNotFoundException::new)
+                .getRole();
+        if (!role.equals("ADMIN") && !memberEntity.getUsername().equals(username)) {
             throw new MemberAccessDeniedException();
         }
         return memberRepository
@@ -61,7 +66,11 @@ public class MemberService {
 
         MemberEntity memberEntity = memberRepository.findById(id)
                 .orElseThrow(MemberNotFoundException::new);
-        if(!memberEntity.getUsername().equals(username)){
+        String role = memberRepository
+                .findByUsername(username)
+                .orElseThrow(MemberNotFoundException::new)
+                .getRole();
+        if (!role.equals("ADMIN") && !memberEntity.getUsername().equals(username)) {
             throw new MemberAccessDeniedException();
         }
 
@@ -75,7 +84,7 @@ public class MemberService {
         BeanUtils.copyProperties(memberRegDto, memberDto);
         memberDto.setId(id);
 
-        if(!memberDto.getPassword().equals(memberEntity.getPassword()))
+        if (!memberDto.getPassword().equals(memberEntity.getPassword()))
             memberDto.setPassword(passwordEncoder.encode(memberRegDto.getPassword()));
         BeanUtils.copyProperties(memberDto, memberEntity);
         memberRepository.save(memberEntity);
@@ -87,7 +96,11 @@ public class MemberService {
                        String username) {
         MemberEntity memberEntity = memberRepository.findById(id)
                 .orElseThrow(MemberNotFoundException::new);
-        if(!memberEntity.getUsername().equals(username)){
+        String role = memberRepository
+                .findByUsername(username)
+                .orElseThrow(MemberNotFoundException::new)
+                .getRole();
+        if (!role.equals("ADMIN") && !memberEntity.getUsername().equals(username)) {
             throw new MemberAccessDeniedException();
         }
         memberRepository.deleteById(id);
@@ -112,7 +125,6 @@ public class MemberService {
 //            throw new RuntimeException(e);
 //        }
     }
-
 
 
 }
