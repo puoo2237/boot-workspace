@@ -1,14 +1,13 @@
 package com.example.db_test.exception.post;
 
-import com.example.db_test.exception.post.MemberNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(name="PostGlobalExceptionHandler")
-public class GlobalExceptionHandler {
+@RestControllerAdvice
+public class GlobalPostExceptionHandler {
     @ExceptionHandler(com.example.db_test.exception.MemberNotFoundException.class)
     public ResponseEntity<ProblemDetail> notFoundHandler(
             MemberNotFoundException memberNotFoundException

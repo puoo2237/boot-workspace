@@ -1,4 +1,4 @@
-package com.example.db_test.exception;
+package com.example.db_test.exception.post;
 
 import lombok.NoArgsConstructor;
 

@@ -1,4 +1,7 @@
 package com.example.db_test.repository.post;
 
-public interface PostRepository1 {
+import com.example.db_test.entity.post.PostEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PostRepository extends JpaRepository<PostEntity, Long> {
 }
