@@ -32,8 +32,9 @@ public class PostController {
 
     @GetMapping("{id}")
     public ResponseEntity<PostDetailDto> getPostOne(
-            @PathVariable long id
+            @PathVariable Long id,
+            @RequestParam("number") Long number
     ){
-        return ResponseEntity.ok(postService.getPostOne(id));
+       return ResponseEntity.ok(postService.getPostOne(id, number));
     }
 }

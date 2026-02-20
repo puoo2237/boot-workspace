@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostDetailDto {
-    private Long id;
+    private Long id, postCount;
     private String title, content, memberUserId, memberUserName;
     private LocalDateTime createdAt, updateTime;
 
