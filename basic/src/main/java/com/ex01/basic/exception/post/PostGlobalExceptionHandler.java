@@ -1,4 +1,4 @@
-package com.ex01.basic.exception;
+package com.ex01.basic.exception.post;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -7,54 +7,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
-    @ExceptionHandler(MemberNotFoundException.class)
+public class PostGlobalExceptionHandler {
+    @ExceptionHandler(PostNotFoundException.class)
     public ResponseEntity<ProblemDetail> notFoundHandler(
-            MemberNotFoundException memberNotFoundException
+            PostNotFoundException postNotFoundException
     ){
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-        problemDetail.setTitle("사용자 없음");
-        problemDetail.setDetail(memberNotFoundException.getMessage());
+        problemDetail.setTitle("게시글 없음");
+        problemDetail.setDetail(postNotFoundException.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
     }
 
-    @ExceptionHandler(MemberDuplicationException.class)
-    public ResponseEntity<ProblemDetail> notFoundHandler(
-            MemberDuplicationException memberDuplicationException
+    @ExceptionHandler(PostDuplicationException.class)
+    public ResponseEntity<ProblemDetail> duplicatedHandler(
+            PostDuplicationException postDuplicationException
     ){
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        problemDetail.setTitle("중복 사용자");
-        problemDetail.setDetail(memberDuplicationException.getMessage());
+        problemDetail.setTitle("게시글 중복");
+        problemDetail.setDetail(postDuplicationException.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(problemDetail);
-    }
-
-    @ExceptionHandler(InvalidLoginException.class)
-    public ResponseEntity<ProblemDetail> notFoundHandler(
-            InvalidLoginException invalidLoginException
-    ){
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
-        problemDetail.setTitle("인증 실패");
-        problemDetail.setDetail(invalidLoginException.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problemDetail);
-    }
-
-    @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity<ProblemDetail> notFoundHandler(
-            FileNotFoundException fileNotFoundException
-    ){
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-        problemDetail.setTitle("파일이 존재하지 않음");
-        problemDetail.setDetail(fileNotFoundException.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
-    }
-
-
-    @ExceptionHandler(MemberAccessDeniedException.class)
-    public ResponseEntity<ProblemDetail> handlerAccessDeniedException(
-            MemberAccessDeniedException memberAccessDeniedException) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
-        problemDetail.setDetail(memberAccessDeniedException.getMessage());
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetail);
     }
 }

@@ -1,4 +1,4 @@
-package com.ex01.basic.dto;
+package com.ex01.basic.dto.post;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,5 +12,4 @@ import java.util.List;
 public class PageDto {
     private List<String> content;
     private int totalPages, number;
-    private boolean first;
 }

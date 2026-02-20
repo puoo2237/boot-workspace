@@ -1,10 +1,10 @@
-package com.ex01.basic.exception;
+package com.ex01.basic.exception.post;
 
-public class MemberNotFoundException extends RuntimeException {
-    public MemberNotFoundException() {
+public class PostNotFoundException extends RuntimeException {
+    public PostNotFoundException() {
     }
 
-    public MemberNotFoundException(String msg) {
+    public PostNotFoundException(String msg) {
         super(msg);
     }
 }

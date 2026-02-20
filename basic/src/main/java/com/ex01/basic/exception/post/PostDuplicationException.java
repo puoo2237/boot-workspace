@@ -1,10 +1,10 @@
-package com.ex01.basic.exception;
+package com.ex01.basic.exception.post;
 
-public class MemberDuplicationException extends RuntimeException {
-    public MemberDuplicationException() {
+public class PostDuplicationException extends RuntimeException {
+    public PostDuplicationException() {
     }
 
-    public MemberDuplicationException(String msg) {
+    public PostDuplicationException(String msg) {
         super(msg);
     }
 }

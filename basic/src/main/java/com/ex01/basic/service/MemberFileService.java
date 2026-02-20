@@ -27,8 +27,6 @@ public class MemberFileService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
-
         }
         return fileName;
     }

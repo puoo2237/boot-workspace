@@ -21,7 +21,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Quiz OpenAPI")
-                        .description("스웨거 실습입니다.")
+                        .description("스웨거 실습")
                         .version("v1.1.0")
                 )
                 .servers(List.of(new Server().url("http://localhost:8080")

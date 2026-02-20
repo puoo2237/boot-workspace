@@ -11,7 +11,7 @@ import java.util.Date;
 public class JwtUtil {
     @Value("${jwt.secretKey}")
     private String secretKey;
-    private final long expirationMs = 1000 * 60 * 10; // 10분동안 유효
+    private final long expirationMs = 1000 * 60 * 30; // 30분동안 유효
 
     // 서버 -> 클라이언트
     public String generateToken(String username, String role) {

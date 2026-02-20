@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -27,7 +29,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
-    public Page<MemberEntity> getList(int start) {
+    public HashMap<String, Object> getList(int start) {
         int size = 3;
         Pageable pageable = PageRequest.of(
                 start,
@@ -37,7 +39,12 @@ public class MemberService {
                 .findAll(pageable);
         if (page.isEmpty())
             throw new MemberNotFoundException();
-        return page;
+
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("totalPages", page.getTotalPages());
+        res.put("content", page.getContent().stream().map(MemberDto::new));
+        res.put("number", page.getNumber());
+        return res;
     }
 
     @Transactional(readOnly = true)
@@ -108,7 +115,7 @@ public class MemberService {
     }
 
     public void insert(MemberRegDto memberRegDto, MultipartFile multipartFile) {
-        if (memberRepository.findByUserName(memberRegDto.getUsername()).isPresent())
+        if (memberRepository.findByUsername(memberRegDto.getUsername()).isPresent())
             throw new MemberDuplicationException();
 
         String fileName = memberFileService.saveFile(multipartFile);

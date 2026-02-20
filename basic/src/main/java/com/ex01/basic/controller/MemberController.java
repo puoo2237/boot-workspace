@@ -2,13 +2,12 @@ package com.ex01.basic.controller;
 
 import com.ex01.basic.dto.MemberDto;
 import com.ex01.basic.dto.MemberRegDto;
-import com.ex01.basic.entity.MemberEntity;
+import com.ex01.basic.dto.post.PageDto;
 import com.ex01.basic.service.MemberFileService;
 import com.ex01.basic.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,7 +15,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
 
 @Tag(name = "MemberAPI", description = "회원 도메인 API")
 // controller -> service -> repository -> dto
@@ -78,19 +78,20 @@ public class MemberController {
                     description = "성공",
                     content = @Content(
                             mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = MemberDto.class))
+                            array = @ArraySchema(schema = @Schema(implementation = PageDto.class))
                     )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "사용자 없음",
                     content = @Content(
-                            examples = @ExampleObject(value = "[]")
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = Void.class))
                     )
             )
     }
     )
-    public ResponseEntity<Page<MemberEntity>> getList(
+    public ResponseEntity<HashMap<String, Object>> getList(
             @RequestParam(value = "start", defaultValue = "0") int start) {
         return ResponseEntity.ok(memberService.getList(start));
     }
@@ -106,14 +107,15 @@ public class MemberController {
                     description = "성공",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = Page.class)
+                            schema = @Schema(implementation = MemberDto.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "사용자 없음",
                     content = @Content(
-                            examples = @ExampleObject(value = "null")
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Void.class)
                     )
             )
     }
