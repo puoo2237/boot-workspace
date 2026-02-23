@@ -84,9 +84,10 @@ public class PostController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<PostAllDto> getPost(
-            @PathVariable int id
+            @PathVariable int id,
+            String username
     ) {
-        return ResponseEntity.ok(postService.getPost(id));
+        return ResponseEntity.ok(postService.getPost(id, username));
     }
 
     @Operation(

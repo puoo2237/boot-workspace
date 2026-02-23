@@ -44,23 +44,32 @@ public class PostService {
             throw new PostNotFoundException();
         HashMap<String, Object> res = new HashMap<>();
         res.put("totalPages", page.getTotalPages());
-        res.put("content", page.getContent().stream().map(PostAllDto::new));
+        res.put("content", page.getContent().stream().map(post -> {
+            int postCount = getPostCount(post.getId());
+            PostAllDto postAllDto = new PostAllDto(post);
+            postAllDto.setPostCount(postCount);
+            return postAllDto;
+        }));
         res.put("number", page.getNumber());
         return res;
     }
 
-    public PostAllDto getPost(int id) {
+    public PostAllDto getPost(int id, String username) {
         PostAllDto res = postRepository
                 .findById(id)
                 .map(PostAllDto::new)
                 .orElseThrow(PostNotFoundException::new);
-
-        int postCount = getPostCount(res.getMemUserId(), res.getId());
+        int memUserId = memberRepository
+                .findByUsername(username)
+                .orElseThrow(MemberNotFoundException::new)
+                .getId();
+        checkMemPostId(memUserId, res.getId());
+        int postCount = getPostCount(res.getId());
         res.setPostCount(postCount);
         return res;
     }
 
-    private int getPostCount(int member_id, int post_id) {
+    private void checkMemPostId(int member_id, int post_id) {
         if (!postCountRepository.existsByMemberEntity_IdAndPostEntity_Id(member_id, post_id)) {
             MemberEntity memberEntity = memberRepository.getReferenceById(member_id);
             PostEntity postEntity = postRepository.getReferenceById(post_id);
@@ -68,6 +77,10 @@ public class PostService {
             PostCountEntity postCountEntity = new PostCountEntity(memberEntity, postEntity);
             postCountRepository.save(postCountEntity);
         }
+    }
+
+    private int getPostCount(int post_id) {
+
         return postCountRepository.countByPostEntity_Id(post_id);
     }
 
