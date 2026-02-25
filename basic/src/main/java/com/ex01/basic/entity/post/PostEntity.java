@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "member_post")
@@ -24,6 +26,22 @@ public class PostEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private MemberEntity memberEntity;
+
+    @OneToMany(
+            mappedBy = "postEntity",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            cascade = CascadeType.ALL)
+    private List<PostCountEntity> postCounts = new ArrayList<>();
+
+
+    @OneToMany(
+            mappedBy = "postEntity",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            cascade = CascadeType.ALL)
+    private List<PostLikeEntity> postLikes = new ArrayList<>();
+
 
     private String title, content;
 

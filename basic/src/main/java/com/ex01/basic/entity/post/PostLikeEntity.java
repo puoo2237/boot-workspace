@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Table(
-        name = "member_post_count",
+        name = "member_post_like",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"member_id", "post_id"})
         }
@@ -20,29 +20,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class PostCountEntity {
+public class PostLikeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "member_id",
-            nullable = true,
-            foreignKey = @ForeignKey(
-                    foreignKeyDefinition = "FOREIGN KEY(member_id) REFERENCES member(id) ON DELETE SET NULL"
-            )
-    )
+    @JoinColumn(name = "member_id", nullable = true)
     private MemberEntity memberEntity;
 
     @ManyToOne
-    @JoinColumn(
-            name = "post_id",
-            nullable = true,
-            foreignKey = @ForeignKey(
-                    foreignKeyDefinition = "FOREIGN KEY(post_id) REFERENCES member_post(id) ON DELETE CASCADE"
-            )
-    )
+    @JoinColumn(name = "post_id", nullable = true)
     private PostEntity postEntity;
 
     @Column(nullable = false)
@@ -53,7 +41,7 @@ public class PostCountEntity {
         this.createdAt = LocalDateTime.now();
     }
 
-    public PostCountEntity(MemberEntity memberEntity, PostEntity postEntity){
+    public PostLikeEntity(MemberEntity memberEntity, PostEntity postEntity){
         this.memberEntity = memberEntity;
         this.postEntity = postEntity;
     }

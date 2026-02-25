@@ -1,5 +1,6 @@
 package com.ex01.basic.controller.post;
 
+import com.ex01.basic.config.security.CustomUserDetails;
 import com.ex01.basic.dto.post.PageDto;
 import com.ex01.basic.dto.post.PostAddDto;
 import com.ex01.basic.dto.post.PostAllDto;
@@ -13,8 +14,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -50,11 +53,16 @@ public class PostController {
                     )
             }
     )
+    @SecurityRequirement(name = "JWT")
     @GetMapping
     public ResponseEntity<HashMap<String, Object>> getPosts(
-            @RequestParam(value = "start", defaultValue = "0") int start
+            @RequestParam(value = "start", defaultValue = "0") int start,
+            @AuthenticationPrincipal CustomUserDetails details
     ) {
-        return ResponseEntity.ok(postService.getPosts(start));
+        int id = 0;
+        if(details != null)
+            id = details.getId();
+        return ResponseEntity.ok(postService.getPosts(start, id));
     }
 
 
@@ -83,11 +91,13 @@ public class PostController {
             }
     )
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "JWT")
     public ResponseEntity<PostAllDto> getPost(
             @PathVariable int id,
-            String username
+            Authentication authentication
     ) {
-        return ResponseEntity.ok(postService.getPost(id, username));
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(postService.getPost(id, userDetails.getId()));
     }
 
     @Operation(
@@ -121,7 +131,7 @@ public class PostController {
             Authentication authentication
     ) {
         postService.insert(postAddDto, authentication.getName());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
@@ -157,7 +167,7 @@ public class PostController {
             Authentication authentication
     ) {
         postService.update(id, postAddDto, authentication.getName());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Operation(
@@ -192,7 +202,7 @@ public class PostController {
     ) {
         postService.delete(id, authentication.getName());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
     }
 }

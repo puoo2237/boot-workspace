@@ -110,6 +110,12 @@ public class MemberService {
         if (!role.equals("ADMIN") && !memberEntity.getUsername().equals(username)) {
             throw new MemberAccessDeniedException();
         }
+
+        memberEntity.getPosts().clear();
+        memberEntity.getPostCounts().forEach(
+                postCount -> postCount.setMemberEntity(null)
+        );
+        memberEntity.getPostLikes().clear();
         memberRepository.deleteById(id);
         memberFileService.deleteFile(fileName);
     }
